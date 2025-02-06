@@ -8,6 +8,7 @@ import (
 
 type DocService struct {
 	DB          *gorm.DB
+	Mu          sync.Mutex
 	UWBMutexMap sync.Map
 }
 

@@ -1274,8 +1274,13 @@ func (service *DocService) AddBuildTrigger(docId uint) error {
 }
 
 func (service *DocService) BuildJob() {
+	service.Mu.Lock()
+	defer service.Mu.Unlock()
+	fmt.Println("bulidjob at: ", time.Now())
+	fmt.Println("-----------------\nCalled BuildJob\n------------------")
 	var triggers []models.BuildTriggers
-	if err := service.DB.Where("triggered = ?", false).Find(&triggers).Error; err != nil {
+	fmt.Println("-----------------\nQuerying triggers\n------------------")
+	if err := service.DB.Where("triggered = ? AND deleted = ?", false, false).Find(&triggers).Error; err != nil {
 		logger.Error("Failed to fetch build triggers", zap.Error(err))
 		return
 	}
@@ -1283,6 +1288,7 @@ func (service *DocService) BuildJob() {
 		return
 	}
 
+	fmt.Println("Triggers: ", triggers)
 	triggerGroups := make(map[uint][]models.BuildTriggers)
 	for _, trigger := range triggers {
 		triggerGroups[trigger.DocumentationID] = append(triggerGroups[trigger.DocumentationID], trigger)

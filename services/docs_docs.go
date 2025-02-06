@@ -4,6 +4,7 @@ import (
 	"errors"
 	"fmt"
 	"sort"
+	"time"
 
 	"git.difuse.io/Difuse/kalmia/db/models"
 	"git.difuse.io/Difuse/kalmia/logger"
@@ -258,6 +259,7 @@ func (service *DocService) CreateDocumentation(documentation *models.Documentati
 	return nil
 }
 
+// Update this to make it a struct
 func (service *DocService) EditDocumentation(user models.User, id uint, name, description, version, favicon, metaImage, navImage,
 	navImageDark, customCSS, footerLabelLinks, moreLabelLinks, copyrightText, url,
 	organizationName, projectName, baseURL, landerDetails string, requireAuth bool,
@@ -392,6 +394,11 @@ func (service *DocService) DeleteDocumentation(id uint) error {
 		return fmt.Errorf("failed_to_get_documentation")
 	}
 
+	fmt.Println("delete at: ", time.Now())
+	if err = service.DB.Model(&models.BuildTriggers{}).Where("documentation_id = ?", id).Update("deleted", true).Error; err != nil {
+		logger.Error("Failed to update build-triggers, `deleted` column ", zap.Error(err))
+	}
+
 	var count int64
 	if err := service.DB.Model(&models.Documentation{}).Where("cloned_from = ?", id).Count(&count).Error; err != nil {
 		return fmt.Errorf("failed_to_check_cloned_documentations")
@@ -478,6 +485,7 @@ func (service *DocService) DeleteDocumentation(id uint) error {
 		return fmt.Errorf("failed_to_add_build_trigger: %v", err)
 	}
 
+	fmt.Println("-----------------\nEnded deletedocs\n------------------")
 	return nil
 }
 

@@ -195,6 +195,7 @@ func EditDocumentation(services *services.ServiceRegistry, w http.ResponseWriter
 }
 
 func DeleteDocumentation(service *services.DocService, w http.ResponseWriter, r *http.Request) {
+	fmt.Println("-----------------\nCalled delete doc\n------------------")
 	type Request struct {
 		ID uint `json:"id" validate:"required"`
 	}
@@ -213,6 +214,8 @@ func DeleteDocumentation(service *services.DocService, w http.ResponseWriter, r 
 	}
 
 	SendJSONResponse(http.StatusOK, w, map[string]string{"status": "success", "message": "documentation_deleted"})
+
+	fmt.Println("-----------------\nResolved delete doc\n------------------")
 }
 
 func CreateDocumentationVersion(service *services.DocService, w http.ResponseWriter, r *http.Request) {
