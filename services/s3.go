@@ -37,7 +37,6 @@ func UploadToS3Storage(file io.Reader, originalFilename, contentType string, par
 
 	ext := filepath.Ext(originalFilename)
 	if ext == "" {
-		// TODO: update this part to detect mimetype once on UploadFile()
 		detectedMIME := mimetype.Detect(fileBytes)
 		ext = detectedMIME.Extension()
 		if contentType == "" {
@@ -66,7 +65,7 @@ func UploadToS3Storage(file io.Reader, originalFilename, contentType string, par
 	if parsedConfig.AssetStorage == "local" {
 		publicURL = fmt.Sprintf("/kal-api/file/get/%s", filename)
 	} else {
-		publicURL = fmt.Sprintf(parsedConfig.S3.PublicUrlFormat, "uploads", filename)
+		publicURL = fmt.Sprintf(parsedConfig.S3.PublicUrlFormat, filename)
 	}
 
 	return publicURL, nil
